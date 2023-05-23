@@ -25,7 +25,7 @@ async function run() {
         // const selfCollection = client.db("CarsDB").collection("self");
 
         app.get('/cars', async (req, res) => {
-            const cursor = carsCollection.find();
+            const cursor = carsCollection.find().limit(20);
             const result = await cursor.toArray();
             res.send(result);
         })
