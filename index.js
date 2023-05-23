@@ -32,15 +32,22 @@ async function run() {
 
         app.get('/cars/:email', async (req, res) => {
             const email = req.params.email;
+            const sort = req.query.sort;
             const query = { email: email }
-            console.log("email", email);
+            console.log("email", email, sort);
             const options = {
+                sort: {
+                    price: sort === 'asc' ? 1 : -1
+                },
                 projection: {
                     category: 1,
                     email: 1,
                     name: 1,
                     photo: 1,
-                    price: 1,
+                    // price: 1,
+                    price: {
+                        $toDouble: "$price"
+                    },
                     quantity: 1,
                     rating: 1,
                     toyname: 1
@@ -54,6 +61,7 @@ async function run() {
 
         app.post('/cars', async (req, res) => {
             const cars = req.body;
+            cars.price = parseFloat(cars.price);
             console.log(cars);
             const result = await carsCollection.insertOne(cars)
             res.send(result)
@@ -68,7 +76,7 @@ async function run() {
             const car = {
                 $set: {
                     quantity: updateCar.quantity,
-                    price: updateCar.price,
+                    price: parseFloat(updateCar.price),
                     details: updateCar.details
                 }
             }
